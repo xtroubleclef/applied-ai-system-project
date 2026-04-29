@@ -1,0 +1,28 @@
+USER: What exactly is a morpheme, and how is it different from a word?
+
+ASSISTANT: A morpheme is the smallest meaningful unit of language — the atom of meaning. A word is often made of one or more morphemes combined.
+
+Consider the word "unbreakable":
+- "un-" is a morpheme meaning "not" (a prefix)
+- "break" is a morpheme — a free morpheme because it can stand alone as a complete word
+- "-able" is a morpheme meaning "capable of" (a suffix)
+
+So "unbreakable" = three morphemes, one word.
+
+Contrast that with "cat" — that's a single morpheme that happens to also be a complete word. Or "cats" — two morphemes: "cat" (the base) and "-s" (a plural morpheme).
+
+The key distinction: words are units of syntax — they can appear independently in sentences. Morphemes are units of meaning-structure, but bound morphemes like "-s", "-ing", "un-", "re-" can't stand alone; they must attach to a base.
+
+Morphology is the subfield of linguistics that studies how morphemes combine to form words. It sits between phonology (sound systems) and syntax (sentence structure).
+
+USER: How does this connect to what NLP systems actually do with text?
+
+ASSISTANT: This is where linguistic theory directly shapes computational design.
+
+Modern NLP systems deal with the morpheme problem through tokenization — the process of splitting text into the units a model actually processes. Early systems tokenized by whitespace, treating "running" and "run" as completely different tokens with no relationship. That's morphologically naive and causes vocabulary explosion: you need separate representations for run, runs, running, ran, runner, runnable…
+
+Subword tokenization algorithms like BPE (Byte Pair Encoding) and WordPiece learned to decompose words at morpheme-like boundaries without explicitly modeling morphology. GPT-4 and Claude use these. "unbreakable" might tokenize as ["un", "break", "able"] or ["unbreak", "able"] depending on training corpus frequencies — the system learns these splits statistically, not linguistically.
+
+Morphologically rich languages (Turkish, Finnish, Hungarian) are a hard case: a single Turkish word can encode what English expresses in an entire phrase. Subword models handle these better than word-level models but still struggle compared to humans.
+
+Lemmatization is the NLP task of reducing inflected forms to their base morpheme — mapping "running" → "run", "better" → "good". This is distinct from stemming (which just chops off suffixes heuristically). Lemmatization requires morphological knowledge; stemming does not.

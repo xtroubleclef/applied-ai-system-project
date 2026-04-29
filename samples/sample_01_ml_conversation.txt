@@ -1,0 +1,25 @@
+USER: I'm trying to understand how neural networks actually learn. Can you walk me through the process?
+
+ASSISTANT: Neural networks learn through a process called backpropagation combined with gradient descent. Here's how it works:
+
+First, the network makes a prediction by passing input data forward through its layers — this is the forward pass. Each layer applies weights and a non-linear activation function to transform the data.
+
+Then we measure how wrong the prediction was using a loss function (like mean squared error or cross-entropy). The loss is a single number that tells us how bad our current weights are.
+
+Backpropagation then computes the gradient of the loss with respect to every weight in the network by applying the chain rule of calculus, working backward from the output layer to the input. This tells us the direction and magnitude by which each weight contributed to the error.
+
+Finally, gradient descent updates the weights by taking a step in the direction that reduces the loss — specifically, subtracting a small fraction (the learning rate) of the gradient from each weight.
+
+This forward-backward cycle repeats for many batches of training data across multiple epochs until the loss converges.
+
+USER: What's the difference between batch gradient descent and stochastic gradient descent?
+
+ASSISTANT: Great follow-up. The difference comes down to how much data you use to compute each gradient update.
+
+Batch gradient descent computes the gradient using the entire training dataset before updating weights. This gives you a very accurate gradient estimate, but it's extremely slow for large datasets and can get stuck in saddle points.
+
+Stochastic gradient descent (SGD) computes the gradient using just one training example at a time. It's much faster and the noisy gradient updates can actually help escape local minima — but the updates are highly variable, making convergence unstable.
+
+Mini-batch gradient descent is the practical middle ground used in virtually all modern deep learning: you compute gradients over a small batch (typically 32–256 examples), getting a reasonably accurate gradient estimate while keeping computation efficient.
+
+The learning rate is a critical hyperparameter in all variants — too large and the weights oscillate or diverge; too small and training is painfully slow. Adaptive optimizers like Adam automatically adjust the learning rate per parameter, which is why they dominate modern practice.

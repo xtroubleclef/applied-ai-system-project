@@ -1,0 +1,23 @@
+USER: We're moving from a monolith to microservices. What should we think about for service communication?
+
+ASSISTANT: Service communication is one of the most critical architectural decisions in a microservices system. You'll primarily choose between two patterns:
+
+Synchronous communication (REST, gRPC) is the simplest approach — service A calls service B and waits for a response. REST over HTTP is ubiquitous and easy to debug. gRPC is faster, uses Protocol Buffers for efficient serialization, and supports streaming — good for high-throughput internal services.
+
+The risk with synchronous patterns is cascading failures: if Service B is slow, Service A is slow. Circuit breakers (like those in Hystrix or Resilience4j) help by detecting when a downstream service is unhealthy and short-circuiting calls to return fallback responses instead of waiting.
+
+Asynchronous messaging (Kafka, RabbitMQ, AWS SQS) decouples services completely. Service A publishes an event and returns immediately; Service B processes it in its own time. This dramatically improves resilience and throughput, but adds operational complexity and makes distributed tracing harder.
+
+Most production systems use both: synchronous for user-facing requests where you need an immediate response, and async event streams for background work, data propagation, and inter-service coordination.
+
+USER: How does an API gateway fit into this picture?
+
+ASSISTANT: An API gateway is the single entry point that sits between your clients and the entire microservices cluster.
+
+It handles cross-cutting concerns that would otherwise have to be duplicated across every service: authentication and authorization, rate limiting, request logging, SSL termination, and request routing.
+
+When a client calls your API, it only ever talks to the gateway — never directly to individual services. The gateway inspects the request, applies policy (is this token valid? has this client exceeded its quota?), then routes the request to the appropriate upstream service.
+
+For more complex flows, gateways can aggregate responses from multiple services into a single client response — this is called the API composition pattern. A product details page, for example, might need data from your catalog service, pricing service, and inventory service; the gateway (or a backend-for-frontend layer it delegates to) fans out those calls and stitches the result.
+
+Kong, AWS API Gateway, and Nginx are common choices. The service mesh layer (Istio, Linkerd) operates below the API gateway, handling east-west (service-to-service) traffic, while the gateway handles north-south (external client to cluster) traffic.

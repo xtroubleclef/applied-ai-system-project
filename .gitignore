@@ -1,0 +1,8 @@
+.env.local
+.env.local.save
+.env*.save
+node_modules/
+.next/
+data/glossary.json
+*.log
+.DS_Store

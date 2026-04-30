@@ -1,8 +1,4 @@
-import fs from 'fs'
-import path from 'path'
 import crypto from 'crypto'
-
-const GLOSSARY_PATH = path.join(process.cwd(), 'data', 'glossary.json')
 
 export interface GlossaryEntry {
   id: string
@@ -17,35 +13,16 @@ export interface GlossaryEntry {
   mode?: 'terminology' | 'decision'
 }
 
-interface GlossaryFile {
-  version: number
-  terms: GlossaryEntry[]
-}
-
-function load(): GlossaryFile {
-  try {
-    if (!fs.existsSync(GLOSSARY_PATH)) return { version: 1, terms: [] }
-    return JSON.parse(fs.readFileSync(GLOSSARY_PATH, 'utf-8')) as GlossaryFile
-  } catch {
-    return { version: 1, terms: [] }
-  }
-}
-
-function save(store: GlossaryFile): void {
-  const dir = path.dirname(GLOSSARY_PATH)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(GLOSSARY_PATH, JSON.stringify(store, null, 2), 'utf-8')
-}
+const store: GlossaryEntry[] = []
 
 export function getAllTerms(): GlossaryEntry[] {
-  return load().terms
+  return store
 }
 
 export function addTerms(
   incoming: Omit<GlossaryEntry, 'id' | 'timestamp'>[]
 ): GlossaryEntry[] {
-  const store = load()
-  const existing = new Set(store.terms.map((t) => t.term.toLowerCase()))
+  const existing = new Set(store.map((t) => t.term.toLowerCase()))
 
   const added: GlossaryEntry[] = []
   for (const t of incoming) {
@@ -55,15 +32,14 @@ export function addTerms(
       id: crypto.randomUUID(),
       timestamp: new Date().toISOString(),
     }
-    store.terms.push(entry)
+    store.push(entry)
     existing.add(t.term.toLowerCase())
     added.push(entry)
   }
 
-  if (added.length > 0) save(store)
   return added
 }
 
 export function clearGlossary(): void {
-  save({ version: 1, terms: [] })
+  store.length = 0
 }
